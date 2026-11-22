@@ -325,7 +325,7 @@
     if (!town) msg = '請填鄉鎮市區（例：花蓮市、吉安鄉）';
     else if (!/[市鎮鄉區]$/.test(town)) msg = '鄉鎮市區要寫完整，例：花蓮市、吉安鄉（外縣市請連縣市一起寫）';
     else if (!rest) msg = '請填村里或路街（例：民勤里府後路）';
-    else if (rest.length < 3) msg = '請寫詳細一點（例：民勤里府後路2號、佳民64號）';
+    else if (!aNoNum.checked && rest.length < 3) msg = '請寫詳細一點（例：民勤里府後路2號、佳民64號）';
     else if (!aNoNum.checked && !/[0-9０-９一二三四五六七八九十百]/.test(rest)) msg = '請補門牌號碼（例：2號、12之3號）；真的沒有門牌請勾下面的選項';
 
     aWarn.textContent = msg ? '⚠ ' + msg : '';
