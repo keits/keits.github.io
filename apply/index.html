@@ -75,7 +75,7 @@
   .chk{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13.5px;color:var(--ink2);font-weight:600}
   .chk input{width:20px;height:20px;accent-color:var(--brand);flex:0 0 auto}
   .addrPreview{margin:10px 0 0;font-size:13px;color:#15803d;font-weight:800;display:none}
-  .addrWarn{margin:6px 0 0;font-size:12.5px;color:#dc2626;font-weight:700;display:none}
+  .addrWarn,.fwarn{margin:6px 0 0;font-size:12.5px;color:#dc2626;font-weight:700;display:none}
 
   /* 送出 */
   .submit{position:sticky;bottom:0;padding:14px 0 0;background:linear-gradient(to top,var(--bg) 60%,transparent)}
@@ -127,11 +127,12 @@
       <div class="row">
         <div class="field">
           <label class="lbl" for="age">年齡<span class="req">*</span></label>
-          <input id="age" name="entry.536027074" type="number" required min="18" max="80" inputmode="numeric" placeholder="例：35">
+          <input id="age" name="entry.536027074" type="number" required min="18" max="80" inputmode="numeric" readonly
+                 placeholder="自動計算" style="background:#f4f4f5"><p class="fwarn" id="ageWarn"></p>
         </div>
         <div class="field">
           <label class="lbl" for="birthday">出生年月日<span class="req">*</span></label>
-          <input id="birthday" name="entry.232676438" type="date" required>
+          <input id="birthday" name="entry.232676438" type="date" required autocomplete="bday" min="1945-01-01"><p class="fwarn" id="bdWarn"></p>
         </div>
       </div>
 
@@ -151,12 +152,12 @@
       <div class="field">
         <label class="lbl" for="idNumber">身分證字號<span class="req">*</span></label>
         <input id="idNumber" name="entry.1398127272" type="text" required maxlength="10"
-               autocapitalize="characters" placeholder="例：U123456789">
+               autocapitalize="characters" spellcheck="false" placeholder="例：U123456789"><p class="fwarn" id="idWarn"></p>
       </div>
 
       <div class="field">
         <label class="lbl" for="phone">手機號碼<span class="req">*</span></label>
-        <input id="phone" name="entry.581776581" type="tel" required inputmode="tel" autocomplete="tel" placeholder="例：0912345678">
+        <input id="phone" name="entry.581776581" type="tel" required inputmode="tel" autocomplete="tel" placeholder="例：0912345678"><p class="fwarn" id="telWarn"></p>
       </div>
 
       <div class="field">
@@ -199,11 +200,11 @@
       <div class="row">
         <div class="field">
           <label class="lbl" for="lineId">LINE ID<span class="opt">選填</span></label>
-          <input id="lineId" name="entry.563078918" type="text" placeholder="方便加你聯絡">
+          <input id="lineId" name="entry.563078918" type="text" placeholder="例：abc123（填 ID，不是手機）"><p class="fwarn" id="lineWarn"></p>
         </div>
         <div class="field">
           <label class="lbl" for="email">電子信箱<span class="opt">選填</span></label>
-          <input id="email" name="entry.2002712528" type="email" placeholder="name@example.com">
+          <input id="email" name="entry.2002712528" type="email" placeholder="name@example.com（沒有就留空白）"><p class="fwarn" id="mailWarn"></p>
         </div>
       </div>
     </div>
@@ -339,6 +340,98 @@
   });
   addrValidate();
 
+  // ── 防呆：生日→年齡、身分證檢核、手機、Email、LINE、無與車種互斥 ──
+  function fw(id, txt){
+    var e = document.getElementById(id); if (!e) return;
+    e.textContent = txt ? '⚠ ' + txt : '';
+    e.style.display = txt ? 'block' : 'none';
+  }
+
+  var bdEl = document.getElementById('birthday'), ageEl = document.getElementById('age');
+  (function(){
+    var now = new Date();
+    var iso = function(d){ return d.toISOString().slice(0,10); };
+    bdEl.max = iso(new Date(now.getFullYear()-18, now.getMonth(), now.getDate()));
+    bdEl.min = iso(new Date(now.getFullYear()-80, now.getMonth(), now.getDate()));
+  })();
+  function syncAge(){
+    if (!bdEl.value) { ageEl.value = ''; fw('bdWarn',''); return true; }
+    var d = new Date(bdEl.value + 'T00:00:00'), now = new Date();
+    var a = now.getFullYear() - d.getFullYear();
+    var m = now.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) a--;
+    if (a < 18) { ageEl.value = ''; fw('bdWarn','要滿 18 歲才能上工地'); return false; }
+    if (a > 80) { ageEl.value = ''; fw('bdWarn','生日好像填錯了，請再確認（要填西元）'); return false; }
+    ageEl.value = a; fw('bdWarn',''); return true;
+  }
+  bdEl.addEventListener('change', syncAge);
+
+  var LMAP = {A:10,B:11,C:12,D:13,E:14,F:15,G:16,H:17,I:34,J:18,K:19,L:20,M:21,
+              N:22,O:35,P:23,Q:24,R:25,S:26,T:27,U:28,V:29,W:32,X:30,Y:31,Z:33};
+  var idEl = document.getElementById('idNumber');
+  function checkId(){
+    var v = (idEl.value || '').replace(/\s/g,'').toUpperCase();
+    idEl.value = v;
+    if (!v) { fw('idWarn',''); return false; }
+    if (!/^[A-Z]\d{9}$/.test(v)) { fw('idWarn','格式是「1 個英文字母＋9 個數字」，例：U123456789'); return false; }
+    var n = LMAP[v[0]];
+    if (n === undefined) { fw('idWarn','第一個英文字母不對'); return false; }
+    var d = [Math.floor(n/10), n%10];
+    for (var i=1;i<10;i++) d.push(+v[i]);
+    var w = [1,9,8,7,6,5,4,3,2,1,1], s = 0;
+    for (var j=0;j<11;j++) s += d[j]*w[j];
+    if (s % 10 !== 0) { fw('idWarn','身分證字號打錯了，請再核對一次'); return false; }
+    fw('idWarn',''); return true;
+  }
+  idEl.addEventListener('blur', checkId);
+  idEl.addEventListener('input', function(){ if (idEl.value.replace(/\s/g,'').length >= 10) checkId(); });
+
+  var telEl = document.getElementById('phone');
+  function checkTel(){
+    var v = (telEl.value || '').replace(/\D/g,'');
+    if (v.length === 9 && v[0] === '9') v = '0' + v;   // 漏打 0 自動補
+    telEl.value = v;
+    if (!v) { fw('telWarn',''); return false; }
+    if (/^09\d{8}$/.test(v)) { fw('telWarn',''); return true; }
+    if (/^0\d{8,9}$/.test(v)) { fw('telWarn','這是市話，請填手機（09 開頭），派工都用這支找你'); return false; }
+    fw('telWarn','手機要 10 碼，例：0912345678'); return false;
+  }
+  telEl.addEventListener('blur', checkTel);
+
+  var mailEl = document.getElementById('email');
+  function checkMail(){
+    var v = (mailEl.value || '').trim();
+    if (!v) { fw('mailWarn',''); return true; }
+    if (/^(無|沒有|none|no|n\/a|-)$/i.test(v)) { mailEl.value = ''; fw('mailWarn','沒有就留空白，不用填「無」'); return true; }
+    if (!/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/.test(v)) { fw('mailWarn','Email 格式怪怪的，例：name@example.com'); return false; }
+    fw('mailWarn',''); return true;
+  }
+  mailEl.addEventListener('blur', checkMail);
+
+  var lineEl = document.getElementById('lineId');
+  function checkLine(){
+    var v = (lineEl.value || '').trim().replace(/^@/,'');
+    if (!v) { fw('lineWarn',''); return true; }
+    if (/^https?:/i.test(v) || /\s/.test(v)) { fw('lineWarn','請填 LINE ID（不是網址），例：abc123'); return false; }
+    if (/^09\d{8}$/.test(v)) { lineEl.value=''; fw('lineWarn','這是手機號碼，不知道 ID 就留空白，我們用電話加你'); return true; }
+    lineEl.value = v; fw('lineWarn',''); return true;
+  }
+  lineEl.addEventListener('blur', checkLine);
+
+  function exclusive(name){
+    var boxes = [].slice.call(document.querySelectorAll('input[name="' + name + '"]'));
+    var none = boxes.filter(function(b){ return b.value === '無'; })[0];
+    if (!none) return;
+    boxes.forEach(function(b){
+      b.addEventListener('change', function(){
+        if (b === none && b.checked) boxes.forEach(function(o){ if (o !== none) o.checked = false; });
+        else if (b !== none && b.checked) none.checked = false;
+      });
+    });
+  }
+  exclusive('entry.1839649551');
+  exclusive('entry.1966447478');
+
   // 送出前：手動必填檢查（HTML5 提示在手機上不好看，這裡自己標）
   form.addEventListener('submit', function(e){
     err.style.display = 'none';
@@ -365,6 +458,17 @@
         return;
       }
     }
+    // 基本資料防呆（身分證檢核、手機、生日→年齡、Email、LINE）
+    var okBd = syncAge(), okId = checkId(), okTel = checkTel(), okMail = checkMail(), okLine = checkLine();
+    if (!okBd || !okId || !okTel || !okMail || !okLine) {
+      e.preventDefault();
+      err.textContent = '請修正下面紅字的欄位（身分證、手機、生日）。';
+      err.style.display = 'block';
+      var badEl = document.querySelector('.fwarn[style*="block"]') || idEl;
+      badEl.scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+
     // 地址：結構化欄位必須通過完整度檢查（防只填「花蓮市」）
     if (!addrValidate()) {
       e.preventDefault();
