@@ -161,7 +161,7 @@
 
       <div class="field">
         <label class="lbl">現居地址<span class="req">*</span></label>
-        <p class="hint" style="margin:0 0 10px">我們要開車去接你，請寫到「路名＋門牌」。<br>只寫「花蓮市」我們找不到人，會先跳過。</p>
+        <p class="hint" style="margin:0 0 10px">我們要開車去接你，請寫到「路名＋門牌」。<br>只寫「花蓮市」我們找不到人，會先跳過。<br>部落或社區名也可以，例：秀林鄉佳民64號。</p>
 
         <div class="row">
           <div class="field">
@@ -187,7 +187,7 @@
         </div>
 
         <input id="addrRest" type="text" style="margin-top:10px"
-               placeholder="村里／路街＋門牌　例：民勤里府後路2號3樓" aria-label="村里路街門牌">
+               placeholder="村里／路街＋門牌　例：民勤里府後路2號" aria-label="村里路街門牌">
 
         <label class="chk"><input type="checkbox" id="addrNoNum"><span>這裡真的沒有門牌（工地宿舍／工寮）</span></label>
 
@@ -325,8 +325,8 @@
     if (!town) msg = '請填鄉鎮市區（例：花蓮市、吉安鄉）';
     else if (!/[市鎮鄉區]$/.test(town)) msg = '鄉鎮市區要寫完整，例：花蓮市、吉安鄉（外縣市請連縣市一起寫）';
     else if (!rest) msg = '請填村里或路街（例：民勤里府後路）';
-    else if (!aNoNum.checked && !/[路街里村大道段巷弄]/.test(rest)) msg = '要寫到路名或村里，例：府後路、民勤里';
-    else if (!aNoNum.checked && !/[0-9０-９]/.test(rest)) msg = '請補門牌號碼（例：2號）；真的沒有門牌請勾下面的選項';
+    else if (rest.length < 3) msg = '請寫詳細一點（例：民勤里府後路2號、佳民64號）';
+    else if (!aNoNum.checked && !/[0-9０-９一二三四五六七八九十百]/.test(rest)) msg = '請補門牌號碼（例：2號、12之3號）；真的沒有門牌請勾下面的選項';
 
     aWarn.textContent = msg ? '⚠ ' + msg : '';
     aWarn.style.display = msg ? 'block' : 'none';
