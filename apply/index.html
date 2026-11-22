@@ -71,6 +71,12 @@
   .joban h2{color:var(--brand-dark)}
   .joban .note{font-size:12.5px;color:#9a3412;margin:10px 0 0}
 
+  /* 地址（結構化） */
+  .chk{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:13.5px;color:var(--ink2);font-weight:600}
+  .chk input{width:20px;height:20px;accent-color:var(--brand);flex:0 0 auto}
+  .addrPreview{margin:10px 0 0;font-size:13px;color:#15803d;font-weight:800;display:none}
+  .addrWarn{margin:6px 0 0;font-size:12.5px;color:#dc2626;font-weight:700;display:none}
+
   /* 送出 */
   .submit{position:sticky;bottom:0;padding:14px 0 0;background:linear-gradient(to top,var(--bg) 60%,transparent)}
   button.go{
@@ -154,9 +160,40 @@
       </div>
 
       <div class="field">
-        <label class="lbl" for="address">現居地址<span class="req">*</span></label>
-        <input id="address" name="entry.800118178" type="text" required autocomplete="street-address"
-               placeholder="將依所在地優先分派鄰近工作">
+        <label class="lbl">現居地址<span class="req">*</span></label>
+        <p class="hint" style="margin:0 0 10px">我們要開車去接你，請寫到「路名＋門牌」。<br>只寫「花蓮市」我們找不到人，會先跳過。</p>
+
+        <div class="row">
+          <div class="field">
+            <select id="addrCity" aria-label="縣市">
+              <option value="花蓮縣" selected>花蓮縣</option>
+              <option value="宜蘭縣">宜蘭縣</option>
+              <option value="臺東縣">臺東縣</option>
+              <option value="南投縣">南投縣</option>
+              <option value="臺中市">臺中市</option>
+              <option value="其他">其他縣市</option>
+            </select>
+          </div>
+          <div class="field">
+            <input id="addrTown" type="text" list="townList" placeholder="鄉鎮市區" aria-label="鄉鎮市區">
+            <datalist id="townList">
+              <option>花蓮市</option><option>鳳林鎮</option><option>玉里鎮</option>
+              <option>新城鄉</option><option>吉安鄉</option><option>壽豐鄉</option>
+              <option>光復鄉</option><option>豐濱鄉</option><option>瑞穗鄉</option>
+              <option>富里鄉</option><option>秀林鄉</option><option>萬榮鄉</option>
+              <option>卓溪鄉</option>
+            </datalist>
+          </div>
+        </div>
+
+        <input id="addrRest" type="text" style="margin-top:10px"
+               placeholder="村里／路街＋門牌　例：民勤里府後路2號3樓" aria-label="村里路街門牌">
+
+        <label class="chk"><input type="checkbox" id="addrNoNum"><span>這裡真的沒有門牌（工地宿舍／工寮）</span></label>
+
+        <p class="addrPreview" id="addrPreview"></p>
+        <p class="addrWarn" id="addrWarn"></p>
+        <input id="address" name="entry.800118178" type="hidden" value="">
       </div>
 
       <div class="row">
@@ -268,6 +305,40 @@
   var sink = document.getElementById('sink');
   var sent = false;
 
+  // ── 現居地址：結構化輸入＋硬性完整度檢查（防只填「花蓮市」） ──
+  var aCity   = document.getElementById('addrCity'),
+      aTown   = document.getElementById('addrTown'),
+      aRest   = document.getElementById('addrRest'),
+      aNoNum  = document.getElementById('addrNoNum'),
+      aHidden = document.getElementById('address'),
+      aPrev   = document.getElementById('addrPreview'),
+      aWarn   = document.getElementById('addrWarn');
+
+  function addrValidate(){
+    var city = aCity.value.trim(), town = aTown.value.trim(), rest = aRest.value.trim();
+    var full = (city === '其他' ? '' : city) + town + rest;
+    aHidden.value = full;
+    if (full) { aPrev.textContent = '✓ 記錄為：' + full; aPrev.style.display = 'block'; }
+    else { aPrev.style.display = 'none'; }
+
+    var msg = '';
+    if (!town) msg = '請填鄉鎮市區（例：花蓮市、吉安鄉）';
+    else if (!/[市鎮鄉區]$/.test(town)) msg = '鄉鎮市區要寫完整，例：花蓮市、吉安鄉（外縣市請連縣市一起寫）';
+    else if (!rest) msg = '請填村里或路街（例：民勤里府後路）';
+    else if (!aNoNum.checked && !/[路街里村大道段巷弄]/.test(rest)) msg = '要寫到路名或村里，例：府後路、民勤里';
+    else if (!aNoNum.checked && !/[0-9０-９]/.test(rest)) msg = '請補門牌號碼（例：2號）；真的沒有門牌請勾下面的選項';
+
+    aWarn.textContent = msg ? '⚠ ' + msg : '';
+    aWarn.style.display = msg ? 'block' : 'none';
+    return !msg;
+  }
+
+  [aCity, aTown, aRest, aNoNum].forEach(function(el){
+    el.addEventListener('input', addrValidate);
+    el.addEventListener('change', addrValidate);
+  });
+  addrValidate();
+
   // 送出前：手動必填檢查（HTML5 提示在手機上不好看，這裡自己標）
   form.addEventListener('submit', function(e){
     err.style.display = 'none';
@@ -293,6 +364,15 @@
         err.style.display = 'block';
         return;
       }
+    }
+    // 地址：結構化欄位必須通過完整度檢查（防只填「花蓮市」）
+    if (!addrValidate()) {
+      e.preventDefault();
+      err.textContent = '請把「現居地址」填寫完整（要寫到路名＋門牌）。';
+      err.style.display = 'block';
+      aTown.scrollIntoView({behavior:'smooth', block:'center'});
+      if (aTown.focus) aTown.focus({preventScroll:true});
+      return;
     }
     sent = true;
     btn.disabled = true;
