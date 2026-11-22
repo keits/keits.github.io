@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可樂工程行｜誠徵工地粗工</title>
+<meta name="description" content="可樂工程行誠徵工地粗工，日薪 1500~2500 依工作內容調整，須年滿 18 歲。線上填寫基本資料，我們會盡快與您聯繫。">
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --ink:#18181b; --ink2:#3f3f46; --muted:#71717a; --line:#e4e4e7;
+    --bg:#f4f4f5; --card:#fff; --brand:#f97316; --brand-dark:#ea580c;
+    --ok:#16a34a; --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px 56px}
+
+  /* 標頭 */
+  header{background:var(--ink); color:#fff; padding:36px 20px 28px; position:relative; overflow:hidden}
+  header::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;
+    background:radial-gradient(circle,rgba(249,115,22,.35),transparent 70%)}
+  .brand{display:inline-block;font-size:12px;letter-spacing:.22em;font-weight:800;color:var(--brand);
+    border:1px solid rgba(249,115,22,.5);border-radius:999px;padding:5px 12px;margin-bottom:14px}
+  h1{margin:0;font-size:clamp(26px,7vw,34px);line-height:1.25;font-weight:900;letter-spacing:-.01em}
+  h1 span{color:var(--brand)}
+  .pay{margin:14px 0 0;font-size:15px;color:#d4d4d8}
+  .pay b{color:#fff;font-size:20px;font-weight:900}
+
+  /* 卡片 */
+  .card{background:var(--card);border-radius:var(--radius);padding:20px;margin-top:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px -16px rgba(0,0,0,.18)}
+  .card h2{margin:0 0 4px;font-size:13px;letter-spacing:.18em;font-weight:900;color:var(--muted);text-transform:uppercase}
+  .card .hint{margin:0 0 14px;font-size:13px;color:var(--muted)}
+
+  .field{margin-top:16px}
+  .field:first-of-type{margin-top:12px}
+  label.lbl{display:block;font-size:13px;font-weight:800;color:var(--ink2);margin-bottom:7px}
+  .req{color:var(--brand);margin-left:3px}
+  .opt{color:var(--muted);font-weight:600;font-size:12px;margin-left:4px}
+
+  input[type=text],input[type=tel],input[type=email],input[type=number],input[type=date],textarea,select{
+    width:100%;font-size:16px;font-family:inherit;color:var(--ink);
+    background:#fafafa;border:1.5px solid var(--line);border-radius:10px;
+    padding:14px;min-height:52px;outline:none;transition:border-color .15s,background .15s;
+  }
+  textarea{min-height:96px;resize:vertical}
+  input:focus,textarea:focus,select:focus{border-color:var(--brand);background:#fff}
+  input::placeholder,textarea::placeholder{color:#a1a1aa}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:430px){.row{grid-template-columns:1fr}}
+
+  /* 選項 */
+  .choices{display:flex;flex-wrap:wrap;gap:8px}
+  .choices label{position:relative;flex:1 1 auto;min-width:92px}
+  .choices input{position:absolute;opacity:0;width:0;height:0}
+  .choices span{display:flex;align-items:center;justify-content:center;text-align:center;
+    min-height:48px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;
+    background:#fafafa;font-size:15px;font-weight:700;color:var(--ink2);cursor:pointer;
+    transition:all .12s;user-select:none}
+  .choices input:checked + span{background:var(--brand);border-color:var(--brand);color:#000;font-weight:900}
+  .choices input:focus-visible + span{outline:2px solid var(--ink);outline-offset:2px}
+
+  /* 職安卡專區 */
+  .joban{background:#fff7ed;border:1.5px solid #fed7aa}
+  .joban h2{color:var(--brand-dark)}
+  .joban .note{font-size:12.5px;color:#9a3412;margin:10px 0 0}
+
+  /* 送出 */
+  .submit{position:sticky;bottom:0;padding:14px 0 0;background:linear-gradient(to top,var(--bg) 60%,transparent)}
+  button.go{
+    width:100%;border:0;border-radius:12px;background:var(--brand);color:#000;
+    font-size:19px;font-weight:900;font-family:inherit;letter-spacing:.02em;
+    padding:18px;min-height:60px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+    box-shadow:0 10px 24px -12px rgba(249,115,22,.9);transition:transform .1s,background .15s
+  }
+  button.go:active{transform:scale(.99);background:var(--brand-dark)}
+  button.go[disabled]{opacity:.6;cursor:progress}
+  .terms{margin:12px 0 0;font-size:12px;color:var(--muted);text-align:center}
+  .err{margin:10px 0 0;font-size:13px;color:#dc2626;font-weight:700;display:none}
+
+  /* 完成 */
+  #done{display:none;text-align:center;padding:28px 20px;margin-top:16px;background:#fff;border-radius:var(--radius)}
+  #done .tick{width:64px;height:64px;border-radius:50%;background:#dcfce7;color:var(--ok);
+    display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 14px}
+  #done h3{margin:0 0 8px;font-size:22px;font-weight:900}
+  #done p{margin:0 0 18px;color:var(--ink2);font-size:15px}
+  .line-btn{display:block;background:#06c755;color:#fff;text-decoration:none;font-weight:900;
+    padding:16px;border-radius:12px;font-size:17px}
+  footer{margin-top:24px;text-align:center;font-size:12px;color:var(--muted);line-height:1.8}
+  footer a{color:var(--ink2)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">可 樂 工 程 行</div>
+  <h1>誠徵<span>工地粗工</span><br>無誠勿試・須年滿18歲</h1>
+  <p class="pay">日薪 <b>1500～2500</b>　依工作內容調整</p>
+</header>
+
+<div class="wrap">
+
+  <form id="applyForm"
+        action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-P_3hGJspd-GhN0KzVb9yga5FVVsGJh_KP6xj8GBvaszBtw/formResponse"
+        method="POST" target="sink" novalidate>
+
+    <div class="card">
+      <h2>基本資料</h2>
+
+      <div class="field">
+        <label class="lbl" for="name">姓名<span class="req">*</span></label>
+        <input id="name" name="entry.1997095627" type="text" required autocomplete="name" placeholder="請填寫真實姓名">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label class="lbl" for="age">年齡<span class="req">*</span></label>
+          <input id="age" name="entry.536027074" type="number" required min="18" max="80" inputmode="numeric" placeholder="例：35">
+        </div>
+        <div class="field">
+          <label class="lbl" for="birthday">出生年月日<span class="req">*</span></label>
+          <input id="birthday" name="entry.232676438" type="date" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">性別<span class="req">*</span></span>
+        <div class="choices">
+          <label><input type="radio" name="entry.1016126319" value="男" required><span>男</span></label>
+          <label><input type="radio" name="entry.1016126319" value="女"><span>女</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>證件與聯絡</h2>
+      <p class="hint">身分證字號僅用於工地進場與勞保申報，不做其他用途。</p>
+
+      <div class="field">
+        <label class="lbl" for="idNumber">身分證字號<span class="req">*</span></label>
+        <input id="idNumber" name="entry.1398127272" type="text" required maxlength="10"
+               autocapitalize="characters" placeholder="例：U123456789">
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="phone">手機號碼<span class="req">*</span></label>
+        <input id="phone" name="entry.581776581" type="tel" required inputmode="tel" autocomplete="tel" placeholder="例：0912345678">
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="address">現居地址<span class="req">*</span></label>
+        <input id="address" name="entry.800118178" type="text" required autocomplete="street-address"
+               placeholder="將依所在地優先分派鄰近工作">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label class="lbl" for="lineId">LINE ID<span class="opt">選填</span></label>
+          <input id="lineId" name="entry.563078918" type="text" placeholder="方便加你聯絡">
+        </div>
+        <div class="field">
+          <label class="lbl" for="email">電子信箱<span class="opt">選填</span></label>
+          <input id="email" name="entry.2002712528" type="email" placeholder="name@example.com">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>工作條件</h2>
+
+      <div class="row">
+        <div class="field">
+          <span class="lbl">婚姻狀況<span class="req">*</span></span>
+          <div class="choices">
+            <label><input type="radio" name="entry.473445776" value="未婚" required><span>未婚</span></label>
+            <label><input type="radio" name="entry.473445776" value="已婚"><span>已婚</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="lbl" for="education">學歷<span class="opt">選填</span></label>
+          <input id="education" name="entry.2101532126" type="text" placeholder="例：高中職、專科">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="experience">經歷<span class="req">*</span></label>
+        <textarea id="experience" name="entry.818085171" required
+                  placeholder="做過哪些工程：打石、拆除、粗清、搬運…（沒有經驗也請寫「無」）"></textarea>
+      </div>
+
+      <div class="field">
+        <span class="lbl">駕照<span class="opt">可複選</span></span>
+        <div class="choices">
+          <label><input type="checkbox" name="entry.1839649551" value="機車"><span>機車</span></label>
+          <label><input type="checkbox" name="entry.1839649551" value="汽車"><span>汽車</span></label>
+          <label><input type="checkbox" name="entry.1839649551" value="無"><span>無</span></label>
+          <label><input type="checkbox" name="entry.1839649551" value="吊扣"><span>吊扣</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">交通工具<span class="req">*</span><span class="opt">可複選</span></span>
+        <div class="choices">
+          <label><input type="checkbox" name="entry.1966447478" value="機車"><span>機車</span></label>
+          <label><input type="checkbox" name="entry.1966447478" value="汽車"><span>汽車</span></label>
+          <label><input type="checkbox" name="entry.1966447478" value="無"><span>無</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="medicalHistory">是否有遺傳性疾病史或正在服藥治療<span class="req">*</span></label>
+        <input id="medicalHistory" name="entry.387491184" type="text" required placeholder="若無請填「無」">
+      </div>
+    </div>
+
+    <div class="card joban">
+      <h2>臺灣職安卡</h2>
+      <p class="hint" style="color:#9a3412">工地進場用的安全訓練卡（不是安全帽）。不確定就選「不確定」，公司可用身分證號代查。</p>
+      <div class="choices">
+        <label><input type="radio" name="entry.1525620867" value="有" required><span>有（已持卡）</span></label>
+        <label><input type="radio" name="entry.1525620867" value="沒有"><span>沒有</span></label>
+        <label><input type="radio" name="entry.1525620867" value="不確定"><span>不確定</span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field" style="margin-top:0">
+        <label class="lbl" for="referrer">介紹人<span class="opt">選填</span></label>
+        <input id="referrer" name="entry.116022284" type="text" placeholder="誰介紹你來的">
+      </div>
+    </div>
+
+    <p class="err" id="errBox">請把紅字標記的必填欄位填寫完成。</p>
+
+    <div class="submit">
+      <button class="go" type="submit" id="goBtn">送出履歷</button>
+      <p class="terms">送出後請加 LINE 聯繫，以利安排工作。</p>
+    </div>
+  </form>
+
+  <div id="done">
+    <div class="tick">✓</div>
+    <h3>已收到你的資料</h3>
+    <p>我們會盡快與你聯繫。現在請加 LINE，並告知「我已填寫履歷」，安排工作會更快。</p>
+    <a class="line-btn" href="https://lin.ee/x4FgZnf" target="_blank" rel="noopener">加 LINE 聯絡我們</a>
+  </div>
+
+  <footer>
+    可樂工程行・須自備工地安全帽及反光背心<br>
+    本頁僅蒐集招募所需資料，不作為其他用途。
+  </footer>
+</div>
+
+<iframe name="sink" id="sink" style="display:none" title="submit-target"></iframe>
+
+<script>
+(function(){
+  var form = document.getElementById('applyForm');
+  var btn  = document.getElementById('goBtn');
+  var err  = document.getElementById('errBox');
+  var done = document.getElementById('done');
+  var sink = document.getElementById('sink');
+  var sent = false;
+
+  // 送出前：手動必填檢查（HTML5 提示在手機上不好看，這裡自己標）
+  form.addEventListener('submit', function(e){
+    err.style.display = 'none';
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      err.style.display = 'block';
+      var bad = form.querySelector(':invalid');
+      if (bad) {
+        bad.scrollIntoView({behavior:'smooth', block:'center'});
+        if (bad.focus) bad.focus({preventScroll:true});
+      }
+      return;
+    }
+    // 交通工具 / 職安卡 這類群組要自己驗
+    var groups = [
+      {name:'entry.1966447478', label:'交通工具'},
+      {name:'entry.1525620867', label:'臺灣職安卡'}
+    ];
+    for (var i=0;i<groups.length;i++){
+      if (!form.querySelector('input[name="'+groups[i].name+'"]:checked')) {
+        e.preventDefault();
+        err.textContent = '請選擇「' + groups[i].label + '」。';
+        err.style.display = 'block';
+        return;
+      }
+    }
+    sent = true;
+    btn.disabled = true;
+    btn.textContent = '送出中…';
+  });
+
+  // Google 回應後 iframe 會載入 → 視為已送出
+  sink.addEventListener('load', function(){
+    if (!sent) return;           // 忽略第一次 about:blank
+    sent = false;
+    setTimeout(function(){
+      form.style.display = 'none';
+      done.style.display = 'block';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }, 600);
+  });
+})();
+</script>
+</body>
+</html>
